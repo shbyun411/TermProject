@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.shbyun.termproject.MainActivity">
+
+    <Button
+        android:text="record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="191dp"
+        android:id="@+id/btn_record" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_record"
+        android:layout_alignLeft="@+id/btn_record"
+        android:layout_alignStart="@+id/btn_record"
+        android:layout_marginBottom="49dp"
+        android:id="@+id/tv_record"
+        android:layout_alignRight="@+id/btn_record"
+        android:layout_alignEnd="@+id/btn_record"
+        android:text="kcal" />
+
+    <Button
+        android:text="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_record"
+        android:layout_toLeftOf="@+id/btn_record"
+        android:layout_toStartOf="@+id/btn_record"
+        android:layout_marginTop="93dp"
+        android:id="@+id/btn_start" />
+
+    <TextView
+        android:text="weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_alignRight="@+id/btn_stop"
+        android:layout_alignEnd="@+id/btn_stop"
+        android:layout_marginTop="28dp"
+        android:id="@+id/tv_weather" />
+
+    <Button
+        android:text="stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_stop"
+        android:layout_alignBaseline="@+id/btn_start"
+        android:layout_alignBottom="@+id/btn_start"
+        android:layout_toRightOf="@+id/btn_record"
+        android:layout_toEndOf="@+id/btn_record" />
+</RelativeLayout>
