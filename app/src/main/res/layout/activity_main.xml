@@ -45,7 +45,7 @@
         android:text="weather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
+
         android:layout_alignRight="@+id/btn_stop"
         android:layout_alignEnd="@+id/btn_stop"
         android:layout_marginTop="28dp"
