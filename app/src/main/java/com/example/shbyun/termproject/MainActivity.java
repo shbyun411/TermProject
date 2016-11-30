@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if(dir_DOWN == 1){
             steps++;
-            stepsview.setText("걸음 수 :  " + steps);
+            stepsview.setText(steps + " 걸음" +  "\n"  + String.format("%.1f",steps*0.076) + " 칼로리소모");
             dir_DOWN = 0;
             dir_UP = 0;
 
