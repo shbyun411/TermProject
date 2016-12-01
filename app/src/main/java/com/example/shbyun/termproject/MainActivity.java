@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.content.Intent;
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener,OnClickListener{
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button record_button = (Button) findViewById(R.id.btn_record);
         start_button.setOnClickListener(this);
         stop_button.setOnClickListener(this);
+        record_button.setOnClickListener(this);
 
     }
 
@@ -57,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 break;
             case R.id.btn_stop:
                 state = 0;
+                break;
+            case R.id.btn_record:
+                Intent intent1 = new Intent(MainActivity.this, RecordTable.class);
+                startActivity(intent1);
                 break;
 
         }
