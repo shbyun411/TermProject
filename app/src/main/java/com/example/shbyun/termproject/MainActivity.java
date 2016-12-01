@@ -7,10 +7,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Button;
+import android.view.View.OnClickListener;
 
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener{
+public class MainActivity extends AppCompatActivity implements SensorEventListener,OnClickListener{
 
     private SensorManager mSensorManager;
     private Sensor sensor_Gravity;
@@ -22,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int dir_UP;
     int dir_DOWN;
     double gravity;
+    int state = 0;
+
+
 
 
     @Override
@@ -35,6 +41,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensor_linear_acceleration = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensor_Gyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
+        Button start_button = (Button) findViewById(R.id.btn_start);
+        Button stop_button = (Button) findViewById(R.id.btn_stop);
+        Button record_button = (Button) findViewById(R.id.btn_record);
+        start_button.setOnClickListener(this);
+        stop_button.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.btn_start:
+                state = 1;
+                break;
+            case R.id.btn_stop:
+                state = 0;
+                break;
+
+        }
     }
 
     protected void onResume(){
@@ -78,20 +103,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gravity = Math.sqrt(gx*gx+gy*gy+gz*gz);
 
         }
+        if(state ==1) {
+            if (acceleration - gravity > 5) {
+                dir_UP = 1;
+            }
+            if (gravity - acceleration > 5 && dir_UP == 1) {
+                dir_DOWN = 1;
+            }
 
-        if(acceleration - gravity > 5){
-            dir_UP = 1;
-        }
-        if(gravity - acceleration > 5 && dir_UP == 1){
-            dir_DOWN = 1;
-        }
+            if (dir_DOWN == 1) {
+                steps++;
+                stepsview.setText(steps + " 걸음" + "\n" + String.format("%.1f", steps * 0.076) + " 칼로리소모");
+                dir_DOWN = 0;
+                dir_UP = 0;
 
-        if(dir_DOWN == 1){
-            steps++;
-            stepsview.setText(steps + " 걸음" +  "\n"  + String.format("%.1f",steps*0.076) + " 칼로리소모");
-            dir_DOWN = 0;
-            dir_UP = 0;
-
+            }
         }
     }
 

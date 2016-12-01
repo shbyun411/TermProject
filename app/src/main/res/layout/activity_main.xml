@@ -29,7 +29,7 @@
         android:id="@+id/tv_record"
         android:layout_alignRight="@+id/btn_record"
         android:layout_alignEnd="@+id/btn_record"
-        android:text="kcal" />
+        android:text="0 걸음\n0 칼로리소모" />
 
     <Button
         android:text="start"
