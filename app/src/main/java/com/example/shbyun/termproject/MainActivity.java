@@ -1,5 +1,23 @@
 package com.example.shbyun.termproject;
 
+import java.net.URL;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+
+
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,6 +30,13 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.widget.Toast;
+
+
+import org.w3c.dom.Text;
+
+
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener,OnClickListener{
@@ -27,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int dir_DOWN;
     double gravity;
     int state = 0;
-
-
+    Document doc = null;
+    TextView textview;
 
 
     @Override
@@ -45,9 +70,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button start_button = (Button) findViewById(R.id.btn_start);
         Button stop_button = (Button) findViewById(R.id.btn_stop);
         Button record_button = (Button) findViewById(R.id.btn_record);
+        Button weather_button = (Button) findViewById(R.id.btn_weather);
         start_button.setOnClickListener(this);
         stop_button.setOnClickListener(this);
         record_button.setOnClickListener(this);
+        weather_button.setOnClickListener(this);
+
+        textview = (TextView)findViewById(R.id.tv_weather);
+
+
 
     }
 
@@ -64,6 +95,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Intent intent1 = new Intent(MainActivity.this, RecordTable.class);
                 startActivity(intent1);
                 break;
+            case  R.id.btn_weather:
+                GetXMLTask task = new GetXMLTask();
+                task.execute("http://www.kma.go.kr/wid/queryDFS.jsp?gridx=61&gridy=125");
+                break;
+
 
         }
     }
@@ -128,6 +164,61 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
-}
+
+    private class GetXMLTask extends AsyncTask<String, Void, Document>{
+
+        @Override
+        protected Document doInBackground(String... urls) {
+            URL url;
+            try {
+                url = new URL(urls[0]);
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder(); //XML문서 빌더 객체를 생성
+                doc = db.parse(new InputSource(url.openStream())); //XML문서를 파싱한다.
+                doc.getDocumentElement().normalize();
+
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "Parsing Error", Toast.LENGTH_SHORT).show();
+            }
+            return doc;
+        }
+
+        @Override
+        protected void onPostExecute(Document doc) {
+            String weatherString = "";
+            String temperature;
+
+
+            NodeList weatherNodeList = doc.getElementsByTagName("data");
+            temperature = weatherNodeList.item(0).getChildNodes().item(3).getTextContent() + "˚";
+
+            Node weatherNode = weatherNodeList.item(0);
+            Element weatherElement = (Element) weatherNode;
+
+            NodeList websiteList = weatherElement.getElementsByTagName("wfKor");
+
+            weatherString += websiteList.item(0).getChildNodes().item(0).getNodeValue() + ", " + temperature;
+            //weatherString += websiteList.item(0).getChildNodes().item(3).getTextContent() + "˚";
+
+            textview.setText(weatherString);
+            System.out.println(weatherString + "날씨정보입니다");
+            System.out.println(temperature+"현재온도");
+            super.onPostExecute(doc);
+
+
+        }
+
+        }
+
+
+    }//end inner class - GetXMLTask
+
+
+
+//메인클래스종료
+
+
+
+
 
 
