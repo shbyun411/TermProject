@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.app.Activity;
+import android.icu.text.AlphabeticIndex;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -32,6 +33,10 @@ import android.view.View.OnClickListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+
 
 
 import org.w3c.dom.Text;
@@ -48,13 +53,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor sensor_Gyroscope;
     double acceleration;
     int steps;
+    double calorie;
     int dir_UP;
     int dir_DOWN;
     double gravity;
     int state = 0;
     Document doc = null;
     TextView textview;
-
+    public static int Arr_steps[] = new int[10];
+    public static double Arr_calorie[] = new double[10];
+    public static int total_steps = 0;
+    public static double total_calorie = 0;
+    int modulus = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,33 +86,51 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         record_button.setOnClickListener(this);
         weather_button.setOnClickListener(this);
 
-        textview = (TextView)findViewById(R.id.tv_weather);
+        textview = (TextView) findViewById(R.id.tv_weather);
+
+
 
 
 
     }
 
-    @Override
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.btn_start:
-                state = 1;
-                break;
-            case R.id.btn_stop:
-                state = 0;
-                break;
-            case R.id.btn_record:
-                Intent intent1 = new Intent(MainActivity.this, RecordTable.class);
-                startActivity(intent1);
-                break;
-            case  R.id.btn_weather:
-                GetXMLTask task = new GetXMLTask();
-                task.execute("http://www.kma.go.kr/wid/queryDFS.jsp?gridx=61&gridy=125");
-                break;
+        @Override
+        public void onClick (View v){
+            switch (v.getId()) {
+                case R.id.btn_start:
+                    state = 1;
+                    break;
+                case R.id.btn_stop:
+                    state = 0;
+                    Arr_steps[modulus] = steps;
+                    Arr_calorie[modulus] = calorie;
+                    modulus++;
+                    modulus = modulus % 10;
+                    calorie = 0;
+                    steps = 0;
+
+                    for(int i=0; i<10; i++) {
+                        total_steps += Arr_steps[i];
+                    }
+                    for(int i=0; i<10; i++) {
+                        total_calorie += Arr_calorie[i];
+                    }
+
+                    break;
+                case R.id.btn_record:
+                    Intent intent1 = new Intent(MainActivity.this, RecordTable.class);
+                    intent1.putExtra("steps", Arr_steps);
+                    startActivity(intent1);
+
+                    break;
+                case R.id.btn_weather:
+                    GetXMLTask task = new GetXMLTask();
+                    task.execute("http://www.kma.go.kr/wid/queryDFS.jsp?gridx=61&gridy=125");
+                    break;
 
 
+            }
         }
-    }
 
     protected void onResume(){
         super.onResume();
@@ -155,7 +183,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             if (dir_DOWN == 1) {
                 steps++;
-                stepsview.setText(steps + " 걸음" + "\n" + String.format("%.1f", steps * 0.076) + " 칼로리소모");
+                calorie = steps*0.076;
+                stepsview.setText(steps + " 걸음" + "\n" + String.format("%.1f", calorie) + " 칼로리소모");
                 dir_DOWN = 0;
                 dir_UP = 0;
 
@@ -190,15 +219,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
             NodeList weatherNodeList = doc.getElementsByTagName("data");
-            temperature = weatherNodeList.item(0).getChildNodes().item(3).getTextContent() + "˚";
+
 
             Node weatherNode = weatherNodeList.item(0);
             Element weatherElement = (Element) weatherNode;
 
             NodeList websiteList = weatherElement.getElementsByTagName("wfKor");
 
+            temperature = weatherNodeList.item(0).getChildNodes().item(3).getTextContent() + "˚";
             weatherString += websiteList.item(0).getChildNodes().item(0).getNodeValue() + ", " + temperature;
-            //weatherString += websiteList.item(0).getChildNodes().item(3).getTextContent() + "˚";
+
 
             textview.setText(weatherString);
             System.out.println(weatherString + "날씨정보입니다");
@@ -210,12 +240,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
 
+    public static int[] getArr_steps() {
+        return Arr_steps;
+    }
+    static int getTotal_steps(){
+        return total_steps;
+    }
+    static double getTotal_calorie(){
+        return total_calorie;
+    }
+}//종료
 
-    }//end inner class - GetXMLTask
 
-
-
-//메인클래스종료
 
 
 
